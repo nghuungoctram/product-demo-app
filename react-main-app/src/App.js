@@ -3,6 +3,7 @@ import './App.css';
 
 function App() {
   const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const [isAngularScriptLoaded, setIsAngularScriptLoaded] = useState(false);
   const [scriptSrc, setScriptSrc] = useState(null);
 
   useEffect(() => {
@@ -25,19 +26,41 @@ function App() {
   }, []);
 
   useEffect(() => {
+    const angularScript = document.createElement('script');
+    angularScript.src = 'http://localhost:3002/main-BU4IDBYS.js'; 
+    angularScript.async = true;
+  
+    angularScript.onload = () => {
+      setIsAngularScriptLoaded(true);
+    };
+  
+    angularScript.onerror = (e) => {
+      console.error('Error loading Angular web component:', e);
+    };
+  
+    document.body.appendChild(angularScript);
+    console.log(angularScript)
+  
+    return () => {
+      document.body.removeChild(angularScript);
+    };
+  }, []);
+  
+
+  useEffect(() => {
     if (scriptSrc) {
       const script = document.createElement('script');
       script.src = scriptSrc;
       script.async = true;
 
       script.onload = () => {
-        if (window.customElements.get('product-display')) {
-          setIsScriptLoaded(true);
+        if (window.customElements.get('product-display')) { 
+          setIsScriptLoaded(true); 
         }
       };
 
       script.onerror = (e) => {
-        console.error('Error loading product app script:', e);
+        console.error('Error loading React web component:', e);
       };
 
       document.body.appendChild(script);
@@ -47,10 +70,17 @@ function App() {
   return (
     <div className="App">
       <h1>Main App</h1>
+
       {isScriptLoaded ? (
-        <product-display></product-display>
+        <product-display></product-display> 
       ) : (
         <p>Loading Product Display...</p>
+      )}
+
+      {isAngularScriptLoaded ? (
+        <shop-info></shop-info> 
+      ) : (
+        <p>Loading Shop Info...</p>
       )}
     </div>
   );
